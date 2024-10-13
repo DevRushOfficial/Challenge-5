@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class GameManagerX : MonoBehaviour
 {
+    public Coroutine timerCoroutine;
+    public TextMeshProUGUI timerText;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI gameOverText;
     public GameObject titleScreen;
@@ -18,6 +20,7 @@ public class GameManagerX : MonoBehaviour
     private float spawnRate = 1.5f;
     public bool isGameActive;
 
+    private int timeRemaining = 60;
     private float spaceBetweenSquares = 2.5f; 
     private float minValueX = -3.75f; //  x value of the center of the left-most square
     private float minValueY = -3.75f; //  y value of the center of the bottom-most square
@@ -28,6 +31,7 @@ public class GameManagerX : MonoBehaviour
         spawnRate /= difficulty;
         isGameActive = true;
         StartCoroutine(SpawnTarget());
+        timerCoroutine = StartCoroutine(Timer());
         score = 0;
         UpdateScore(0);
         titleScreen.SetActive(false);
@@ -44,6 +48,22 @@ public class GameManagerX : MonoBehaviour
             if (isGameActive)
             {
                 Instantiate(targetPrefabs[index], RandomSpawnPosition(), targetPrefabs[index].transform.rotation);
+            }
+        }
+    }
+
+    IEnumerator Timer()
+    {
+        while (isGameActive)
+        {
+            timerText.text = "Time: " + timeRemaining;
+
+            yield return new WaitForSeconds(1);
+            timeRemaining--;
+            
+            if (timeRemaining == 0)
+            {
+                GameOver();
             }
         }
     }
